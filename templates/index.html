@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Semantic Similarity Measurement | Sentence-BERT</title>
+  <meta name="description" content="Sentiment-aware semantic similarity using SBERT + DistilBERT deep learning models." />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="page-header" role="banner">
+    <div class="badge">🤖 NLP · Deep Learning · Sentiment-Aware</div>
+    <h1>Semantic Similarity Measurement</h1>
+    <p>
+      Powered by <strong>Sentence-BERT</strong> + <strong>DistilBERT Sentiment</strong>.<br/>
+      Correctly distinguishes between <em>"I love it"</em> and <em>"I hate it"</em>.
+    </p>
+  </header>
+
+  <!-- ===================== MAIN CARD ===================== -->
+  <main id="main-content">
+    <div class="card" role="main">
+
+      <!-- Sentence 1 -->
+      <div class="form-group">
+        <label for="sentence1">
+          <span class="label-num" aria-hidden="true">1</span>
+          Sentence 1
+        </label>
+        <textarea
+          id="sentence1"
+          rows="3"
+          placeholder="e.g. I love chocolate"
+          aria-label="First sentence"
+          aria-required="true"
+        ></textarea>
+      </div>
+
+      <div class="vs-divider" aria-hidden="true">VS</div>
+
+      <!-- Sentence 2 -->
+      <div class="form-group">
+        <label for="sentence2">
+          <span class="label-num" aria-hidden="true">2</span>
+          Sentence 2
+        </label>
+        <textarea
+          id="sentence2"
+          rows="3"
+          placeholder="e.g. I hate chocolate"
+          aria-label="Second sentence"
+          aria-required="true"
+        ></textarea>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend" role="group" aria-label="Score legend">
+        <div class="legend-item"><span class="legend-dot high"></span><span>0.8–1.0 Highly Similar</span></div>
+        <div class="legend-item"><span class="legend-dot mid"></span><span>0.5–0.8 Moderately Similar</span></div>
+        <div class="legend-item"><span class="legend-dot low"></span><span>&lt;0.5 Not Similar</span></div>
+      </div>
+
+      <!-- Button -->
+      <button id="calculate-btn" class="btn-calculate" type="button">
+        <span class="btn-icon" aria-hidden="true">⚡</span>
+        Calculate Similarity
+      </button>
+
+      <!-- Loader -->
+      <div class="loader-wrapper" id="loader" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <span>Running deep learning models…</span>
+      </div>
+
+      <!-- Error -->
+      <div class="error-msg" id="error-msg" role="alert" aria-live="assertive"></div>
+
+      <!-- ============================================================
+           RESULT CARD
+           Shows: adjusted score, interpretation, sentiment breakdown,
+                  topical vs adjusted score comparison
+      ============================================================ -->
+      <section class="result-card" id="result-card" aria-label="Similarity result" aria-live="polite">
+
+        <div class="result-label">📊 Similarity Result</div>
+
+        <!-- Main score + badge -->
+        <div class="score-row">
+          <div class="score-number" id="score-number">0.0000</div>
+          <div class="interpretation-badge" id="interpretation-badge">—</div>
+        </div>
+
+        <!-- Score bar -->
+        <div class="score-bar-track" aria-hidden="true">
+          <div class="score-bar-fill" id="score-bar-fill"></div>
+        </div>
+        <div class="score-range-labels" aria-hidden="true">
+          <span>0.0 (Not Similar)</span>
+          <span>1.0 (Identical)</span>
+        </div>
+
+        <!-- ── Sentiment Cards ── -->
+        <div class="sentiment-row" id="sentiment-row">
+
+          <div class="sentiment-card" id="s1-card">
+            <div class="sentiment-card-label">Sentence 1 Sentiment</div>
+            <div class="sentiment-card-content">
+              <span class="sentiment-emoji" id="s1-emoji"></span>
+              <span class="sentiment-badge" id="s1-badge"></span>
+            </div>
+            <div class="sentiment-conf" id="s1-conf"></div>
+            <div class="sentiment-text" id="s1-text"></div>
+          </div>
+
+          <div class="sentiment-arrow" aria-hidden="true" id="sentiment-arrow">
+            <span id="arrow-icon">↔</span>
+          </div>
+
+          <div class="sentiment-card" id="s2-card">
+            <div class="sentiment-card-label">Sentence 2 Sentiment</div>
+            <div class="sentiment-card-content">
+              <span class="sentiment-emoji" id="s2-emoji"></span>
+              <span class="sentiment-badge" id="s2-badge"></span>
+            </div>
+            <div class="sentiment-conf" id="s2-conf"></div>
+            <div class="sentiment-text" id="s2-text"></div>
+          </div>
+
+        </div>
+
+        <!-- ── Score Breakdown ── -->
+        <div class="breakdown-box">
+          <div class="breakdown-title">🧮 Score Breakdown</div>
+          <div class="breakdown-formula">
+            <span class="formula-part">
+              <span class="formula-val" id="f-topical">—</span>
+              <span class="formula-label">Topical<br/>(SBERT)</span>
+            </span>
+            <span class="formula-op">×</span>
+            <span class="formula-part">
+              <span class="formula-val" id="f-agreement">—</span>
+              <span class="formula-label">Sentiment<br/>Agreement</span>
+            </span>
+            <span class="formula-op">=</span>
+            <span class="formula-part final">
+              <span class="formula-val" id="f-final">—</span>
+              <span class="formula-label">Final<br/>Score</span>
+            </span>
+          </div>
+          <div class="breakdown-explain" id="breakdown-explain"></div>
+        </div>
+
+        <!-- Echo sentences -->
+        <div class="sentences-echo">
+          <div class="echo-item"><strong>Sentence 1</strong><span id="echo-s1"></span></div>
+          <div class="echo-item"><strong>Sentence 2</strong><span id="echo-s2"></span></div>
+        </div>
+
+      </section>
+
+    </div><!-- /.card -->
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="page-footer" role="contentinfo">
+    <p>
+      <a href="https://www.sbert.net/" target="_blank" rel="noopener">Sentence-BERT</a>
+      &nbsp;+&nbsp;
+      <a href="https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english" target="_blank" rel="noopener">DistilBERT SST-2</a>
+      &nbsp;·&nbsp;
+      <a href="/docs" target="_blank" rel="noopener">API Docs</a>
+    </p>
+  </footer>
+
+  <!-- ===================== JAVASCRIPT ===================== -->
+  <script>
+    /**
+     * Sentiment-Aware Semantic Similarity Frontend
+     * ─────────────────────────────────────────────
+     * Calls POST /similarity and renders:
+     *  • Adjusted final score (sentiment-penalised)
+     *  • Raw topical score from SBERT
+     *  • Sentiment label + confidence for each sentence
+     *  • Score breakdown formula
+     */
+
+    // ── DOM refs ──────────────────────────────────────────────────
+    const calculateBtn   = document.getElementById('calculate-btn');
+    const s1Input        = document.getElementById('sentence1');
+    const s2Input        = document.getElementById('sentence2');
+    const loaderEl       = document.getElementById('loader');
+    const errorMsgEl     = document.getElementById('error-msg');
+    const resultCard     = document.getElementById('result-card');
+    const scoreNumberEl  = document.getElementById('score-number');
+    const badgeEl        = document.getElementById('interpretation-badge');
+    const scoreBarFill   = document.getElementById('score-bar-fill');
+
+    // Sentiment card elements
+    const s1Emoji  = document.getElementById('s1-emoji');
+    const s1Badge  = document.getElementById('s1-badge');
+    const s1Conf   = document.getElementById('s1-conf');
+    const s1Text   = document.getElementById('s1-text');
+    const s2Emoji  = document.getElementById('s2-emoji');
+    const s2Badge  = document.getElementById('s2-badge');
+    const s2Conf   = document.getElementById('s2-conf');
+    const s2Text   = document.getElementById('s2-text');
+    const arrowIcon = document.getElementById('arrow-icon');
+
+    // Breakdown elements
+    const fTopical   = document.getElementById('f-topical');
+    const fAgreement = document.getElementById('f-agreement');
+    const fFinal     = document.getElementById('f-final');
+    const breakdownExplain = document.getElementById('breakdown-explain');
+
+    const echoS1 = document.getElementById('echo-s1');
+    const echoS2 = document.getElementById('echo-s2');
+
+    // ── Helpers ──────────────────────────────────────────────────
+    function show(el) { el.classList.add('visible'); }
+    function hide(el) { el.classList.remove('visible'); }
+
+    function setLoading(on) {
+      loaderEl.classList.toggle('active', on);
+      calculateBtn.disabled = on;
+    }
+
+    function getBadgeClass(label) {
+      if (label.toLowerCase().includes('highly'))     return 'highly';
+      if (label.toLowerCase().includes('moderately')) return 'moderately';
+      return 'not-similar';
+    }
+
+    /**
+     * Renders the sentiment info for one sentence into its card.
+     * @param {string} label   - "POSITIVE" or "NEGATIVE"
+     * @param {number} conf    - confidence 0–1
+     * @param {string} text    - the sentence text
+     * @param {HTMLElement} emojiEl
+     * @param {HTMLElement} badgeEl
+     * @param {HTMLElement} confEl
+     * @param {HTMLElement} textEl
+     */
+    function renderSentimentCard(label, conf, text, emojiEl, badgeElParam, confEl, textEl) {
+      const isPos = label === 'POSITIVE';
+      emojiEl.textContent    = isPos ? '😊' : '😠';
+      badgeElParam.textContent = label;
+      badgeElParam.className   = 'sentiment-badge ' + (isPos ? 'pos' : 'neg');
+      confEl.textContent     = `Confidence: ${(conf * 100).toFixed(1)}%`;
+      textEl.textContent     = `"${text}"`;
+    }
+
+    /**
+     * Animates a number from 0 to target in `duration` ms.
+     */
+    function animateNumber(el, target, duration = 800, decimals = 4) {
+      const start = performance.now();
+      function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = (eased * target).toFixed(decimals);
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    /**
+     * Renders the full result UI from the API response.
+     */
+    function displayResult(data) {
+      const score      = data.adjusted_score;
+      const topical    = data.topical_score;
+      const agreement  = data.sentiment_agreement;
+      const s1Info     = data.sentiment1;
+      const s2Info     = data.sentiment2;
+      const sameLabel  = s1Info.label === s2Info.label;
+
+      // ── Main score ──────────────────────────────────────────
+      animateNumber(scoreNumberEl, score);
+      badgeEl.textContent = data.interpretation;
+      badgeEl.className   = 'interpretation-badge ' + getBadgeClass(data.interpretation);
+      setTimeout(() => {
+        scoreBarFill.style.width = (score * 100).toFixed(1) + '%';
+      }, 50);
+
+      // ── Sentiment Cards ─────────────────────────────────────
+      renderSentimentCard(s1Info.label, s1Info.score, data.sentence1,
+                          s1Emoji, s1Badge, s1Conf, s1Text);
+      renderSentimentCard(s2Info.label, s2Info.score, data.sentence2,
+                          s2Emoji, s2Badge, s2Conf, s2Text);
+
+      // Arrow between sentiment cards
+      if (sameLabel) {
+        arrowIcon.textContent = '✅ Same';
+        arrowIcon.className   = 'arrow-same';
+      } else {
+        arrowIcon.textContent = '⚡ Opposite';
+        arrowIcon.className   = 'arrow-opp';
+      }
+
+      // ── Breakdown formula ────────────────────────────────────
+      fTopical.textContent   = topical.toFixed(4);
+      fAgreement.textContent = agreement.toFixed(4);
+      fFinal.textContent     = score.toFixed(4);
+
+      if (sameLabel) {
+        breakdownExplain.textContent =
+          `✅ Both sentences have ${s1Info.label} sentiment → no penalty applied. ` +
+          `Final score = topical score (${topical.toFixed(4)}).`;
+        breakdownExplain.className = 'breakdown-explain same';
+      } else {
+        const penalty = (s1Info.score * s2Info.score * 100).toFixed(1);
+        breakdownExplain.textContent =
+          `⚡ Opposite sentiments detected (${s1Info.label} vs ${s2Info.label}). ` +
+          `Sentiment penalty = ${penalty}% → agreement factor = ${agreement.toFixed(4)}. ` +
+          `Final score drops from ${topical.toFixed(4)} → ${score.toFixed(4)}.`;
+        breakdownExplain.className = 'breakdown-explain opp';
+      }
+
+      // ── Echo sentences ───────────────────────────────────────
+      echoS1.textContent = data.sentence1;
+      echoS2.textContent = data.sentence2;
+
+      show(resultCard);
+    }
+
+    // ── Main Handler ─────────────────────────────────────────────
+    async function handleCalculate() {
+      hide(resultCard);
+      hide(errorMsgEl);
+      errorMsgEl.textContent  = '';
+      scoreBarFill.style.width = '0%';
+
+      const s1 = s1Input.value.trim();
+      const s2 = s2Input.value.trim();
+
+      if (!s1 || !s2) {
+        errorMsgEl.textContent = '⚠️ Please fill in both sentence fields.';
+        show(errorMsgEl);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const res = await fetch('/similarity', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ sentence1: s1, sentence2: s2 }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => null);
+          throw new Error(err?.detail || `Server error ${res.status}`);
+        }
+
+        const data = await res.json();
+        displayResult(data);
+      } catch (err) {
+        errorMsgEl.textContent = '❌ ' + (err.message || 'Unexpected error. Is the server running?');
+        show(errorMsgEl);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // ── Events ───────────────────────────────────────────────────
+    calculateBtn.addEventListener('click', handleCalculate);
+    [s1Input, s2Input].forEach(el => {
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          handleCalculate();
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+# requirements.txt – All dependencies for the Semantic Similarity App
+# Install: pip install -r requirements.txt
+
+# FastAPI – web framework
+fastapi>=0.110.0
+
+# Uvicorn – ASGI server
+uvicorn[standard]>=0.29.0
+
+# Sentence Transformers – SBERT model (all-MiniLM-L6-v2)
+sentence-transformers>=2.7.0
+
+# HuggingFace Transformers – DistilBERT sentiment classifier
+transformers>=4.40.0
+
+# Scikit-learn – cosine similarity
+scikit-learn>=1.4.0
+
+# Jinja2 – HTML template rendering
+jinja2>=3.1.4
+
+# Python-multipart – form data support
+python-multipart>=0.0.9
+
+# Pydantic – request/response validation
+pydantic>=2.6.0
+
+# PyTorch – deep learning backend for both models
+# For CPU-only (smaller download):
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+torch>=2.2.0
