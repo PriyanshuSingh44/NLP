@@ -1,13 +1,13 @@
 # 🧠 Semantic Similarity Measurement Using Pretrained Word Embeddings
 
-A full-stack NLP web application that measures the **semantic similarity** between two sentences using **Sentence-BERT** (all-MiniLM-L6-v2) and **cosine similarity**. Built with **FastAPI** (backend) and **Vanilla HTML/CSS/JS** (frontend).
-
 ![Python](https://img.shields.io/badge/🐍_Python-3.12-blue?style=flat-square)
 ![FastAPI](https://img.shields.io/badge/⚡_FastAPI-Framework-009688?style=flat-square)
 ![Sentence Transformers](https://img.shields.io/badge/🤗_Sentence--BERT-all--MiniLM--L6--v2-orange?style=flat-square)
 ![scikit-learn](https://img.shields.io/badge/🔬_scikit--learn-ML-F7931E?style=flat-square)
 ![Docker](https://img.shields.io/badge/🐳_Docker-Containerized-2496ED?style=flat-square)
 ![NLP](https://img.shields.io/badge/🧠-NLP-purple?style=flat-square)
+
+A full-stack NLP web application that measures the **semantic similarity** between two sentences using **Sentence-BERT** (all-MiniLM-L6-v2) and **cosine similarity**. Built with **FastAPI** (backend) and **Vanilla HTML/CSS/JS** (frontend).
 
 ---
 
