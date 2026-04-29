@@ -2,6 +2,13 @@
 
 A full-stack NLP web application that measures the **semantic similarity** between two sentences using **Sentence-BERT** (all-MiniLM-L6-v2) and **cosine similarity**. Built with **FastAPI** (backend) and **Vanilla HTML/CSS/JS** (frontend).
 
+![Python](https://img.shields.io/badge/🐍_Python-3.12-blue?style=flat-square)
+![FastAPI](https://img.shields.io/badge/⚡_FastAPI-Framework-009688?style=flat-square)
+![Sentence Transformers](https://img.shields.io/badge/🤗_Sentence--BERT-all--MiniLM--L6--v2-orange?style=flat-square)
+![scikit-learn](https://img.shields.io/badge/🔬_scikit--learn-ML-F7931E?style=flat-square)
+![Docker](https://img.shields.io/badge/🐳_Docker-Containerized-2496ED?style=flat-square)
+![NLP](https://img.shields.io/badge/🧠-NLP-purple?style=flat-square)
+
 ---
 
 ## 📌 Table of Contents
@@ -11,9 +18,10 @@ A full-stack NLP web application that measures the **semantic similarity** betwe
 3. [How the Model is Used](#how-the-model-is-used)
 4. [Project Structure](#project-structure)
 5. [How to Run Locally](#how-to-run-locally)
-6. [API Reference](#api-reference)
-7. [Score Interpretation](#score-interpretation)
-8. [Technologies Used](#technologies-used)
+6. [🐳 Run with Docker](#-run-with-docker)
+7. [API Reference](#api-reference)
+8. [Score Interpretation](#score-interpretation)
+9. [Technologies Used](#technologies-used)
 
 ---
 
@@ -103,8 +111,10 @@ nlp project/
 ├── templates/
 │   └── index.html         # Frontend: HTML + Vanilla JS (uses fetch API)
 │
+├── Dockerfile             # Docker image definition
+├── .dockerignore          # Files excluded from the Docker build context
 ├── requirements.txt       # Python package dependencies
-├── run.sh                 # Startup script (Linux/macOS)
+├── run.bat                # One-click startup script (Windows)
 └── README.md              # This file
 ```
 
@@ -154,14 +164,14 @@ pip install -r requirements.txt
 
 ### Step 4 – Run the Application
 
-**Windows:**
-```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+**Windows (one-click script):**
+```bat
+.\run.bat
 ```
 
-**Linux / macOS:**
+**Windows / Linux / macOS (manual):**
 ```bash
-./run.sh
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### Step 5 – Open in Browser
@@ -170,6 +180,48 @@ Navigate to: **[http://localhost:8000](http://localhost:8000)**
 
 The interactive API documentation (Swagger UI) is also available at:  
 **[http://localhost:8000/docs](http://localhost:8000/docs)**
+
+---
+
+## 🐳 Run with Docker
+
+Docker lets you run the app in an isolated container — **no Python installation or virtual environment needed**.
+
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
+
+### Step 1 – Build the Docker Image
+
+```bash
+docker build -t nlp-similarity-app .
+```
+
+> ⚠️ **Note:** The first build will download the `all-MiniLM-L6-v2` model (~90 MB) from Hugging Face inside the container. Ensure you have an internet connection.
+
+### Step 2 – Run the Container
+
+```bash
+docker run -p 8000:8000 nlp-similarity-app
+```
+
+This maps port **8000** on your machine to port **8000** inside the container.
+
+### Step 3 – Open in Browser
+
+Navigate to: **[http://localhost:8000](http://localhost:8000)**
+
+> 💡 **Tip:** To run the container in the background (detached mode), use:
+> ```bash
+> docker run -d -p 8000:8000 --name nlp-app nlp-similarity-app
+> ```
+> Stop it later with: `docker stop nlp-app`
+
+### What's in the Docker Setup?
+
+| File | Purpose |
+|---|---|
+| `Dockerfile` | Defines the image: Python 3.12-slim base, installs deps, copies code, starts Uvicorn |
+| `.dockerignore` | Excludes `.venv/`, `__pycache__/`, model binaries, and `.git` from the build context |
 
 ---
 
@@ -228,6 +280,7 @@ curl -X POST http://localhost:8000/similarity \
 | Templating | [Jinja2](https://jinja.palletsprojects.com/) | HTML rendering |
 | Frontend | HTML5 + CSS3 + Vanilla JS | User interface |
 | Validation | [Pydantic](https://docs.pydantic.dev/) | Request/response schemas |
+| Containerization | [Docker](https://www.docker.com/) | Portable, dependency-free deployment |
 
 ---
 
