@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+.venv/
+venv/
+
+# ML stuff (MAIN ISSUE)
+models/
+*.pt
+*.bin
+*.h5
+
+# Data
+data/
+datasets/
+
+# Git
+.git
+.gitignore
+
+# OS
+.DS_Store
